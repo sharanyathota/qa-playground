@@ -3,9 +3,9 @@ import time
 
 from selenium import webdriver
 import pytest
-from pageObjects.LoginPage import LoginPage
-from utilities.readProperties import ReadConfig
-from utilities.customLogger import LogGen
+from pages.LoginPage import LoginPage
+from utils.readProperties import ReadConfig
+from utils.customLogger import LogGen
 
 class TestLogin():
     base_url = ReadConfig.getApplicationURL()

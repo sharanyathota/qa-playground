@@ -8,10 +8,10 @@ sys.path.insert(0, project_root)
 
 from selenium import webdriver
 import pytest
-from pageObjects.LoginPage import LoginPage
-from utilities.readProperties import ReadConfig
-from utilities.customLogger import LogGen
-from utilities import Excelutils
+from pages.LoginPage import LoginPage
+from utils.readProperties import ReadConfig
+from utils.customLogger import LogGen
+from utils import Excelutils
 
 """
 Data-Driven Test for Login functionality using Excel data.
@@ -29,34 +29,35 @@ Row 3: invalid@test.com | wrongpass | fail |
 Row 4: admin@yourstore.com | wrongpass | fail |
 """
 
+
 class TestLogin_DDT():
     base_url = ReadConfig.getApplicationURL()
     path = "/Users/sharanya/PycharmProjects/nopcommerce/testdata/testdata.xlsx"
     logger = LogGen.loggen()
 
-    @pytest.mark.parametrize("username, password, expected_result", 
-                           Excelutils.get_data_as_list(path, 'Sheet1', skip_header=True))
+    @pytest.mark.parametrize("username, password, expected_result",
+                             Excelutils.get_data_as_list(path, 'Sheet1', skip_header=True))
     def test_login_ddt(self, setup, username, password, expected_result):
         self.logger.info("****TestLogin_DDT****")
         self.logger.info(f"****Testing with username: {username}****")
-        
+
         self.driver = setup
         self.driver.get(self.base_url)
         self.lp = LoginPage(self.driver)
-        
+
         try:
             # Enter credentials
             self.lp.setUsername(username)
             self.lp.setPassword(password)
             self.lp.clickLogin()
-            
+
             # Give some time for the page to load
             time.sleep(2)
-            
+
             # Check the result
             title = self.driver.title
             self.logger.info(f"Page title after login: {title}")
-            
+
             if expected_result.lower() == "pass":
                 # Expected to pass
                 if "Dashboard" in title and "nopCommerce" in title:
@@ -78,7 +79,7 @@ class TestLogin_DDT():
                     self.logger.error(f"***Login unexpectedly succeeded for {username}***")
                     self.write_test_result(username, "Fail")
                     assert False
-                    
+
         except Exception as e:
             self.logger.error(f"***Exception occurred during test: {str(e)}***")
             self.take_screenshot(f"exception_{username}")
@@ -87,7 +88,7 @@ class TestLogin_DDT():
         finally:
             if self.driver:
                 self.driver.close()
-    
+
     def take_screenshot(self, test_name):
         """Helper method to take screenshot on failure"""
         try:
@@ -97,7 +98,7 @@ class TestLogin_DDT():
             self.logger.info(f"Screenshot saved: {screenshot_path}")
         except Exception as e:
             self.logger.error(f"Error taking screenshot: {str(e)}")
-    
+
     def write_test_result(self, username, result):
         """Helper method to write test results back to Excel"""
         try:
