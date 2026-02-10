@@ -1,0 +1,9 @@
+env: qa
+
+qa:
+  ui:
+    base_url: https://www.google.com
+    browser: chrome
+
+  api:
+    base_url: https://httpbin.org
